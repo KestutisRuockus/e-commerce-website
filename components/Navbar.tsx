@@ -11,9 +11,14 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
-  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
-  const { items } = useCartStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const { items } = useCartStore();
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   useEffect(() => {
@@ -24,8 +29,7 @@ const Navbar = () => {
     };
 
     window.addEventListener("resize", handleResize);
-
-    return window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -46,7 +50,7 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           <Link href="/checkout" className="relative">
             <ShoppingCartIcon className="h-6 w-6" />
-            {cartCount > 0 && (
+            {isHydrated && cartCount > 0 && (
               <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                 {cartCount}
               </span>
